@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for giordano/SoftPositBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: hewxu1N3eklJg7APP2gs41nQ7mUIUAXtehO+63pJ+tGy9vMtcCJupdsm9zySXaf68Xa7Sxrrhwz1+RbmXs8ERU2NlabWJJ9cGcyIQRhGaLvD+Fsrl6YSz2eEu0HW3CVC6BNWdR8KSb0hVU1s+zaJTM+jgQ/RwcweodqXGVIBj24lOZT4g4B0DXax9+4gnsv9F5KBjgr7d3JZlyW1fQK7BHf0ICjtFFMCTOw9E4AH0UnPNH5VNcCow7cZGAV12gB+pshVbCtutDMWFkm5Cx2Jv4bxtAWKKX01F74sE6fm2qKC3CnoY63VuwONyzrN5e7EC6kUyMIB4dVCxlTPuyt/+p+7gJfm7W/wQiLl7q+LqR+rqKaTgR3qI2RJ3nruciaIkmorFsy79nZSHi7dr3jXq0EX90c3jHuGKh8rPCATtP88EgUyNbmVNZ6C48G47PQK6t2FfdGSIRvxOqvZ+ZIxObQoEWCJg7z84IX7p4SnkDPy9t61TwxmKEqwVJq8qrIAIhQlUTfHa5LkewpAxBqkIZhbShef5clTHDxr7tApsniBDyscyTyNIp2V0kQQX2rXwi58DvtZfwfdlKftXxihXHI3grXUB/rfFC3FkMhYxR3YDn7un2SBPmo8Q2aymMM0F3ZZJ7+0b8JQ+XXge8z3iOYEGrkUppb2WM+zlQDLKBc=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: giordano/SoftPositBuilder
+        tags: true
